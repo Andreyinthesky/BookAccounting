@@ -1,6 +1,7 @@
 using BookAccounting.Data.Models;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookAccounting.Data
 {
@@ -22,8 +23,12 @@ namespace BookAccounting.Data
             modelBuilder.Entity<Reader>().HasKey(r => r.Id);
             modelBuilder.Entity<IssuedBook>().HasKey(ib => ib.Id);
 
-            modelBuilder.Entity<IssuedBook>().HasOne((ib) => ib.Reader);
-            modelBuilder.Entity<IssuedBook>().HasOne((ib) => ib.Book);
+            modelBuilder.Entity<Reader>().HasMany((r) => r.IssuedBooks).WithOne(ib => ib.Reader)
+                .HasForeignKey(ib => ib.IdReader)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Book>().HasMany((b) => b.IssuedBooks).WithOne(ib => ib.Book)
+                .HasForeignKey(ib => ib.IdBook)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<Book> Books { get; set; }

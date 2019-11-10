@@ -1,4 +1,6 @@
-﻿namespace BookAccounting.Forms
+﻿﻿using BookAccounting.CustomControls;
+
+ namespace BookAccounting.Forms
 {
     partial class MainForm
     {
@@ -52,19 +54,13 @@
             this.dataGridViewIssuedBooks = new System.Windows.Forms.DataGridView();
             this.groupBoxFilters = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanelFilters = new System.Windows.Forms.TableLayoutPanel();
-            this.dataGridViewFilters = new System.Windows.Forms.DataGridView();
-            this.UsedFilterTableColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.OperatorFilterTableColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.FieldFilterTableColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.ConditionFilterTableColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dataGridViewFilters = new FiltersDataGridView();
             this.btnApplyFilters = new System.Windows.Forms.Button();
             this.btnAddFilter = new System.Windows.Forms.Button();
             this.btnDeleteFilter = new System.Windows.Forms.Button();
             this.tableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
             this.btnCreateReport = new System.Windows.Forms.Button();
             this.btnAddBook = new System.Windows.Forms.Button();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ValueFilterTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.idBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.authorBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bookBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -88,12 +84,7 @@
             this.dateIssueIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateReturnIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.idBookIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.bookNameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.authorNameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.idReaderIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.surnameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.nameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.patronymicIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.issuedBooksBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControlTables.SuspendLayout();
             this.tabPageBooks.SuspendLayout();
@@ -175,6 +166,7 @@
             this.tableLayoutPanelBtnBook.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelBtnBook.Size = new System.Drawing.Size(1230, 64);
             this.tableLayoutPanelBtnBook.TabIndex = 2;
+            this.tableLayoutPanelFilters.SetRowSpan(this.dataGridViewFilters, 3);
             // 
             // btnDeleteBook
             // 
@@ -332,7 +324,6 @@
             // 
             this.tabPageIssuedBook.Controls.Add(this.groupBoxIssuedBookActions);
             this.tabPageIssuedBook.Controls.Add(this.dataGridViewIssuedBooks);
-            this.tabPageIssuedBook.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.tabPageIssuedBook.Location = new System.Drawing.Point(4, 54);
             this.tabPageIssuedBook.Name = "tabPageIssuedBook";
             this.tabPageIssuedBook.Padding = new System.Windows.Forms.Padding(3);
@@ -420,12 +411,7 @@
             this.dateIssueIssuedBookTableColumn,
             this.dateReturnIssuedBookTableColumn,
             this.idBookIssuedBookTableColumn,
-            this.bookNameIssuedBookTableColumn,
-            this.authorNameIssuedBookTableColumn,
-            this.idReaderIssuedBookTableColumn,
-            this.surnameIssuedBookTableColumn,
-            this.nameIssuedBookTableColumn,
-            this.patronymicIssuedBookTableColumn});
+            this.idReaderIssuedBookTableColumn,});
             this.dataGridViewIssuedBooks.DataSource = this.issuedBooksBindingSource;
             this.dataGridViewIssuedBooks.Location = new System.Drawing.Point(3, 3);
             this.dataGridViewIssuedBooks.Name = "dataGridViewIssuedBooks";
@@ -434,6 +420,11 @@
             this.dataGridViewIssuedBooks.Size = new System.Drawing.Size(1245, 300);
             this.dataGridViewIssuedBooks.TabIndex = 0;
             this.dataGridViewIssuedBooks.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DataGridViewIssuedBooks_CellPainting);
+            //
+            // dataGridViewFilters
+            //
+            dataGridViewFilters.CellValueChanged += DataGridViewFilters_CellValueChanged;
+            dataGridViewFilters.RowsAdded += DataGridViewFilters_RowsAdded;
             // 
             // groupBoxFilters
             // 
@@ -465,56 +456,6 @@
             this.tableLayoutPanelFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanelFilters.Size = new System.Drawing.Size(1250, 187);
             this.tableLayoutPanelFilters.TabIndex = 2;
-            // 
-            // dataGridViewFilters
-            // 
-            this.dataGridViewFilters.AllowUserToAddRows = false;
-            this.dataGridViewFilters.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewFilters.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.UsedFilterTableColumn,
-            this.OperatorFilterTableColumn,
-            this.FieldFilterTableColumn,
-            this.ConditionFilterTableColumn,
-            this.ValueFilterTableColumn});
-            this.dataGridViewFilters.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewFilters.Location = new System.Drawing.Point(3, 3);
-            this.dataGridViewFilters.MultiSelect = false;
-            this.dataGridViewFilters.Name = "dataGridViewFilters";
-            this.tableLayoutPanelFilters.SetRowSpan(this.dataGridViewFilters, 3);
-            this.dataGridViewFilters.RowTemplate.Height = 24;
-            this.dataGridViewFilters.Size = new System.Drawing.Size(994, 181);
-            this.dataGridViewFilters.TabIndex = 1;
-            this.dataGridViewFilters.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewFilters_CellValueChanged);
-            this.dataGridViewFilters.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DataGridViewFilters_RowsAdded);
-            // 
-            // UsedFilterTableColumn
-            // 
-            this.UsedFilterTableColumn.Frozen = true;
-            this.UsedFilterTableColumn.HeaderText = "Включен";
-            this.UsedFilterTableColumn.Name = "UsedFilterTableColumn";
-            // 
-            // OperatorFilterTableColumn
-            // 
-            this.OperatorFilterTableColumn.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.OperatorFilterTableColumn.Frozen = true;
-            this.OperatorFilterTableColumn.HeaderText = "Связь";
-            this.OperatorFilterTableColumn.Items.AddRange(new object[] {
-            "И",
-            "ИЛИ"});
-            this.OperatorFilterTableColumn.Name = "OperatorFilterTableColumn";
-            // 
-            // FieldFilterTableColumn
-            // 
-            this.FieldFilterTableColumn.Frozen = true;
-            this.FieldFilterTableColumn.HeaderText = "Поле";
-            this.FieldFilterTableColumn.Name = "FieldFilterTableColumn";
-            this.FieldFilterTableColumn.Width = 200;
-            // 
-            // ConditionFilterTableColumn
-            // 
-            this.ConditionFilterTableColumn.Frozen = true;
-            this.ConditionFilterTableColumn.HeaderText = "Условие";
-            this.ConditionFilterTableColumn.Name = "ConditionFilterTableColumn";
             // 
             // btnApplyFilters
             // 
@@ -596,24 +537,6 @@
             this.btnAddBook.Text = "Добавить книгу";
             this.btnAddBook.UseVisualStyleBackColor = true;
             this.btnAddBook.Click += new System.EventHandler(this.BtnAddBook_Click);
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.Frozen = true;
-            this.dataGridViewTextBoxColumn1.HeaderText = "Значение";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewTextBoxColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.dataGridViewTextBoxColumn1.Width = 200;
-            // 
-            // ValueFilterTableColumn
-            // 
-            this.ValueFilterTableColumn.Frozen = true;
-            this.ValueFilterTableColumn.HeaderText = "Значение";
-            this.ValueFilterTableColumn.Name = "ValueFilterTableColumn";
-            this.ValueFilterTableColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.ValueFilterTableColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ValueFilterTableColumn.Width = 200;
             // 
             // idBookTableColumn
             // 
@@ -780,23 +703,7 @@
             this.idBookIssuedBookTableColumn.HeaderText = "Id книги";
             this.idBookIssuedBookTableColumn.Name = "idBookIssuedBookTableColumn";
             this.idBookIssuedBookTableColumn.ReadOnly = true;
-            this.idBookIssuedBookTableColumn.Width = 50;
-            // 
-            // bookNameIssuedBookTableColumn
-            // 
-            this.bookNameIssuedBookTableColumn.DataPropertyName = "BookName";
-            this.bookNameIssuedBookTableColumn.HeaderText = "Название";
-            this.bookNameIssuedBookTableColumn.Name = "bookNameIssuedBookTableColumn";
-            this.bookNameIssuedBookTableColumn.ReadOnly = true;
-            this.bookNameIssuedBookTableColumn.Width = 150;
-            // 
-            // authorNameIssuedBookTableColumn
-            // 
-            this.authorNameIssuedBookTableColumn.DataPropertyName = "AuthorName";
-            this.authorNameIssuedBookTableColumn.HeaderText = "Автор";
-            this.authorNameIssuedBookTableColumn.Name = "authorNameIssuedBookTableColumn";
-            this.authorNameIssuedBookTableColumn.ReadOnly = true;
-            this.authorNameIssuedBookTableColumn.Width = 150;
+            this.idBookIssuedBookTableColumn.Width = 100;
             // 
             // idReaderIssuedBookTableColumn
             // 
@@ -804,31 +711,7 @@
             this.idReaderIssuedBookTableColumn.HeaderText = "Id читателя";
             this.idReaderIssuedBookTableColumn.Name = "idReaderIssuedBookTableColumn";
             this.idReaderIssuedBookTableColumn.ReadOnly = true;
-            this.idReaderIssuedBookTableColumn.Width = 50;
-            // 
-            // surnameIssuedBookTableColumn
-            // 
-            this.surnameIssuedBookTableColumn.DataPropertyName = "Surname";
-            this.surnameIssuedBookTableColumn.HeaderText = "Фамилия";
-            this.surnameIssuedBookTableColumn.Name = "surnameIssuedBookTableColumn";
-            this.surnameIssuedBookTableColumn.ReadOnly = true;
-            this.surnameIssuedBookTableColumn.Width = 150;
-            // 
-            // nameIssuedBookTableColumn
-            // 
-            this.nameIssuedBookTableColumn.DataPropertyName = "Name";
-            this.nameIssuedBookTableColumn.HeaderText = "Имя";
-            this.nameIssuedBookTableColumn.Name = "nameIssuedBookTableColumn";
-            this.nameIssuedBookTableColumn.ReadOnly = true;
-            this.nameIssuedBookTableColumn.Width = 150;
-            // 
-            // patronymicIssuedBookTableColumn
-            // 
-            this.patronymicIssuedBookTableColumn.DataPropertyName = "Patronymic";
-            this.patronymicIssuedBookTableColumn.HeaderText = "Отчество";
-            this.patronymicIssuedBookTableColumn.Name = "patronymicIssuedBookTableColumn";
-            this.patronymicIssuedBookTableColumn.ReadOnly = true;
-            this.patronymicIssuedBookTableColumn.Width = 150;
+            this.idReaderIssuedBookTableColumn.Width = 100;
             // 
             // issuedBooksBindingSource
             // 
@@ -901,7 +784,7 @@
         private System.Windows.Forms.DataGridView dataGridViewIssuedBooks;
         private System.Windows.Forms.GroupBox groupBoxFilters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelFilters;
-        private System.Windows.Forms.DataGridView dataGridViewFilters;
+        private BookAccounting.CustomControls.FiltersDataGridView dataGridViewFilters;
         private System.Windows.Forms.Button btnApplyFilters;
         private System.Windows.Forms.Button btnAddFilter;
         private System.Windows.Forms.Button btnDeleteFilter;
@@ -927,19 +810,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dateIssueIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateReturnIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn idBookIssuedBookTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn bookNameIssuedBookTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn authorNameIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn idReaderIssuedBookTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn surnameIssuedBookTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn nameIssuedBookTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn patronymicIssuedBookTableColumn;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelBtnBook;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn UsedFilterTableColumn;
-        private System.Windows.Forms.DataGridViewComboBoxColumn OperatorFilterTableColumn;
-        private System.Windows.Forms.DataGridViewComboBoxColumn FieldFilterTableColumn;
-        private System.Windows.Forms.DataGridViewComboBoxColumn ConditionFilterTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ValueFilterTableColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.Button btnCreateReport;
     }
 }

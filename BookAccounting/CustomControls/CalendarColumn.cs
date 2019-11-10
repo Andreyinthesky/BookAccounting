@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace BookAccounting
+namespace BookAccounting.CustomControls
 {
     public class CalendarColumn : DataGridViewColumn
     {

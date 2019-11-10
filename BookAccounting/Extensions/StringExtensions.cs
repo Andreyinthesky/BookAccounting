@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BookAccounting
+namespace BookAccounting.Extensions
 {
     public static class StringExtensions
     {

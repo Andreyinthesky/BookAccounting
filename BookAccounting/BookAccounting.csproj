@@ -199,6 +199,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomControls\CalendarColumn.cs" />
+    <Compile Include="CustomControls\FiltersDataGridView.cs" />
+    <Compile Include="CustomControls\IFilterProvider.cs" />
     <Compile Include="Data\LibraryDbContext.cs" />
     <Compile Include="Data\Models\Book.cs" />
     <Compile Include="Data\Models\IssuedBook.cs" />
@@ -207,7 +209,12 @@
     <Compile Include="Data\Repositories\IRepository.cs" />
     <Compile Include="Data\Repositories\IssuedBooksRepository.cs" />
     <Compile Include="Data\Repositories\ReadersRepository.cs" />
-    <Compile Include="Filter.cs" />
+    <Compile Include="Extensions\DataGridViewColumnCollectionExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="FilterBuilder\FilterStatement.cs" />
+    <Compile Include="FilterBuilder\FilterBuilder.cs" />
+    <Compile Include="FilterBuilder\FilterParameters\Condition.cs" />
+    <Compile Include="FilterBuilder\FilterParameters\Operator.cs" />
     <Compile Include="Forms\AddEditFormState.cs" />
     <Compile Include="Forms\ReportForm.cs">
       <SubType>Form</SubType>
@@ -215,9 +222,6 @@
     <Compile Include="Forms\ReportForm.Designer.cs">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="StringExtensions.cs" />
-    <Compile Include="Localization.cs" />
-    <Compile Include="FilterController.cs" />
     <Compile Include="Forms\AddEditBookForm.cs">
       <SubType>Form</SubType>
     </Compile>

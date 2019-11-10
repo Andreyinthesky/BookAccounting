@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
+using BookAccounting.CustomControls;
 using BookAccounting.Data.Models;
 using BookAccounting.Data.Repositories;
+using BookAccounting.Extensions;
+using BookAccounting.FilterBuilder;
+using BookAccounting.FilterBuilder.FilterParameters;
 
 namespace BookAccounting.Forms
 {
     public partial class MainForm : Form
     {
-        BindingSource currentBindingSource;
+        DataGridView currentDisplayDataGrid;
         bool filtersFromBufferAreLoading;
 
         private BooksRepository booksRepository = new BooksRepository();
@@ -31,8 +37,14 @@ namespace BookAccounting.Forms
             bookBindingSource.DataSource = booksRepository.GetAll();
             readerBindingSource.DataSource = readersRepository.GetAll();
             issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
-            currentBindingSource = bookBindingSource;
-//            FieldFilterTableColumn.Items.AddRange(FilterController.filterTableColumnsNames.Keys.ToArray());
+
+            currentDisplayDataGrid = dataGridViewBooks;
+            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+            
+            fieldFilterTableColumn.DataSource = 
+                currentDisplayDataGrid.Columns.AsEnumerable().Select(c => new {c.HeaderText, c.DataPropertyName}).ToArray();
+            fieldFilterTableColumn.DisplayMember = "HeaderText";
+            fieldFilterTableColumn.ValueMember = "DataPropertyName";
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -85,15 +97,7 @@ namespace BookAccounting.Forms
                                     relatedIssuedBooks.Count),
                                 "Сообщение",
                                 MessageBoxButtons.OKCancel,
-                                MessageBoxIcon.Warning) == DialogResult.OK)
-                        {
-                            foreach (var issuedBook in relatedIssuedBooks)
-                            {
-                                issuedBooksRepository.Delete(issuedBook);
-                                issuedBooksBindingSource.Remove(issuedBook);
-                            }
-                        }
-                        else
+                                MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             return;
                         }
@@ -101,6 +105,7 @@ namespace BookAccounting.Forms
 
                     booksRepository.Delete((Book) bookBindingSource.Current);
                     bookBindingSource.RemoveCurrent();
+                    issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
                 }
             }
         }
@@ -137,21 +142,25 @@ namespace BookAccounting.Forms
                 if (MessageBox.Show("Вы действительно хотите удалить запись?", "Сообщение", MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (issuedBooksRepository.GetAll()
-                        .Any(b => b.IdReader == ((Reader) readerBindingSource.Current).Id))
-                    {
-                        MessageBox.Show(
-                            "Вам нужно сначало удалить все выданные книги на этого читателя," +
-                            " " +
-                            "прежде чем вы сможете его удалить.",
+                    var relatedIssuedBooks = issuedBooksRepository.GetAll()
+                        .Where(b => b.IdReader == ((Reader) readerBindingSource.Current).Id).ToList();
+
+                    if (MessageBox.Show(
+                            String.Format(
+                                "Чтобы удалить этого читателя, нужно удалить все выданные книги ({0} записей)." +
+                                " " +
+                                "Хотите продожить?",
+                                relatedIssuedBooks.Count),
                             "Сообщение",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                            MessageBoxButtons.OKCancel,
+                            MessageBoxIcon.Warning) != DialogResult.OK)
+                    {
                         return;
                     }
 
                     readersRepository.Delete((Reader) readerBindingSource.Current);
                     readerBindingSource.RemoveCurrent();
+                    issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
                 }
             }
         }
@@ -174,6 +183,7 @@ namespace BookAccounting.Forms
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll().ToList();
+                    bookBindingSource.DataSource = booksRepository.GetAll();
                 }
             }
         }
@@ -185,8 +195,8 @@ namespace BookAccounting.Forms
             if (issuedBook == null)
                 return;
 
-            var reader = readersRepository.GetAll().FirstOrDefault(r => r.Id == issuedBook.IdReader);
-            var book = booksRepository.GetAll().FirstOrDefault(b => b.Id == issuedBook.IdBook);
+            var reader = readersRepository.FindById(issuedBook.IdReader);
+            var book = booksRepository.FindById(issuedBook.IdBook);
 
             using (var form = new AddEditIssuedBookForm(issuedBook, book,
                 reader, issuedBooksRepository))
@@ -194,6 +204,7 @@ namespace BookAccounting.Forms
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     issuedBooksBindingSource.ResetCurrentItem();
+                    bookBindingSource.DataSource = booksRepository.GetAll();
                 }
             }
         }
@@ -208,16 +219,8 @@ namespace BookAccounting.Forms
                     var issuedBook = (IssuedBook) issuedBooksBindingSource.Current;
 
                     issuedBooksRepository.Delete(issuedBook);
-
-                    var book = booksRepository
-                        .GetAll()
-                        .FirstOrDefault(b => b.Id == issuedBook.IdBook);
-
-                    if (book == null)
-                        MessageBox.Show("Внимание, книга на возврат отсутствует в базе!", "Сообщение",
-                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
                     issuedBooksBindingSource.RemoveCurrent();
+                    bookBindingSource.DataSource = booksRepository.GetAll();
                 }
             }
         }
@@ -231,18 +234,18 @@ namespace BookAccounting.Forms
                 dataGridViewFilters[e.ColumnIndex, e.RowIndex])
             {
                 var cellValue = dataGridViewFilters[e.ColumnIndex, e.RowIndex].Value.ToString();
-                var propertyType = currentBindingSource.DataSource
+                var propertyType = ((BindingSource) currentDisplayDataGrid.DataSource).DataSource
                     .GetType()
                     .GetGenericArguments()[0]
-                    .GetProperty(FilterController.filterTableColumnsNames[cellValue])
+                    .GetProperty(cellValue)
                     .PropertyType;
 
                 var conditionsCell = new DataGridViewComboBoxCell();
 
-                conditionsCell.Items.AddRange(FilterController.numberConditions);
+                conditionsCell.Items.AddRange(dataGridViewFilters.NumberConditionValues);
                 dataGridViewFilters["ConditionFilterTableColumn", e.RowIndex] = conditionsCell;
                 dataGridViewFilters["ConditionFilterTableColumn", e.RowIndex].Value =
-                    FilterController.numberConditions.First();
+                    dataGridViewFilters.NumberConditionValues.First();
                 dataGridViewFilters["ValueFilterTableColumn", e.RowIndex] = new DataGridViewTextBoxCell();
 
                 if (propertyType == typeof(int) || propertyType == typeof(int?))
@@ -258,18 +261,36 @@ namespace BookAccounting.Forms
                 else
                 {
                     conditionsCell.Items.Clear();
-                    conditionsCell.Items.AddRange(FilterController.stringConditions);
+                    conditionsCell.Items.AddRange(dataGridViewFilters.StringConditionValues);
                     dataGridViewFilters["ConditionFilterTableColumn", e.RowIndex].Value =
-                        FilterController.stringConditions.First();
+                        dataGridViewFilters.StringConditionValues.First();
                 }
             }
         }
 
         private void BtnApplyFilter_Click(object sender, EventArgs e)
         {
-            var filters = FilterController.GetFilters(dataGridViewFilters);
-            var entityType = currentBindingSource.DataSource.GetType().GetGenericArguments()[0];
-//                currentBindingSource.DataSource = FilterController.ApplyFilters(db, entityType, filters);
+            var currentBindingSource = (BindingSource) currentDisplayDataGrid.DataSource;
+            var entityType = currentBindingSource.DataSource
+                .GetType()
+                .GetGenericArguments()[0];
+            var filterStatements = dataGridViewFilters.GetFilters();
+
+            if (entityType == typeof(Book))
+            {
+                var builder = new FilterBuilder<Book>(filterStatements);
+                currentBindingSource.DataSource = booksRepository.GetAll().Where(builder).ToList();
+            } 
+            else if (entityType == typeof(Reader))
+            {
+                var builder = new FilterBuilder<Reader>(filterStatements);                
+                currentBindingSource.DataSource = readersRepository.GetAll().Where(builder).ToList();
+            }
+            else if (entityType == typeof(IssuedBook))
+            {
+                var builder = new FilterBuilder<IssuedBook>(filterStatements);
+                currentBindingSource.DataSource = issuedBooksRepository.GetAll().Where(builder).ToList();
+            }
         }
 
         private void BtnAddFilter_Click(object sender, EventArgs e)
@@ -288,39 +309,46 @@ namespace BookAccounting.Forms
         private void TabControlTables_Selecting(object sender, TabControlCancelEventArgs e)
         {
             dataGridViewFilters.Rows.Clear();
+            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+            
             filtersFromBufferAreLoading = true;
+
             if (e.TabPage == tabPageBooks)
             {
-                currentBindingSource = bookBindingSource;
-                FilterController.filterTableColumnsNames = Localization.localNamesBook;
+                currentDisplayDataGrid = dataGridViewBooks;
                 dataGridViewFilters.Rows.AddRange(bookFiltersBuffer.ToArray());
             }
             else if (e.TabPage == tabPageReaders)
             {
-                currentBindingSource = readerBindingSource;
-                FilterController.filterTableColumnsNames = Localization.localNamesReaders;
+                currentDisplayDataGrid = dataGridViewReaders;
                 dataGridViewFilters.Rows.AddRange(readerFiltersBuffer.ToArray());
             }
             else
             {
-                currentBindingSource = issuedBooksBindingSource;
-                FilterController.filterTableColumnsNames = Localization.localNamesIssuedBooksView;
+                currentDisplayDataGrid = dataGridViewIssuedBooks;
                 dataGridViewFilters.Rows.AddRange(issuedBooksFiltersBuffer.ToArray());
             }
 
+            fieldFilterTableColumn.DataSource = 
+                currentDisplayDataGrid.Columns.AsEnumerable().Select(c => new{c.HeaderText, c.DataPropertyName}).ToArray();
+            fieldFilterTableColumn.DisplayMember = "HeaderText";
+            fieldFilterTableColumn.ValueMember = "DataPropertyName";
+
             filtersFromBufferAreLoading = false;
-            FieldFilterTableColumn.Items.Clear();
-            FieldFilterTableColumn.Items.AddRange(FilterController.filterTableColumnsNames.Keys.ToArray());
         }
 
         private void DataGridViewFilters_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             if (e.RowCount <= 0 || filtersFromBufferAreLoading) return;
+            
+            var operatorFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["OperatorFilterTableColumn"]);
+            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+            
             ((DataGridView) sender).Rows[e.RowIndex].Cells["UsedFilterTableColumn"].Value = true;
             ((DataGridView) sender).Rows[e.RowIndex].Cells["OperatorFilterTableColumn"].Value =
-                OperatorFilterTableColumn.Items[0];
+                operatorFilterTableColumn.Items[0];
             ((DataGridView) sender).Rows[e.RowIndex].Cells["FieldFilterTableColumn"].Value =
-                FilterController.filterTableColumnsNames.Keys.First();
+                ((dynamic)fieldFilterTableColumn.Items[0]).DataPropertyName;
             ((DataGridView) sender).Rows[e.RowIndex].Cells["ConditionFilterTableColumn"].Value = "=";
             ((DataGridView) sender).Rows[e.RowIndex].Cells["ValueFilterTableColumn"].Value = "1";
         }
@@ -376,9 +404,6 @@ namespace BookAccounting.Forms
 
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
-//                using (var form = new ReportForm())
-//                {
-//                }
         }
     }
 }
