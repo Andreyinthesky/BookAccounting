@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 using BookAccounting.CustomControls;
 using BookAccounting.Data.Models;
@@ -404,6 +406,36 @@ namespace BookAccounting.Forms
 
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Сохранить отчет";
+            saveFileDialog.DefaultExt = "csv";
+            saveFileDialog.Filter = "CSV|*.csv";
+            saveFileDialog.AddExtension = true;
+
+            var dialogResult = saveFileDialog.ShowDialog();
+
+            if (dialogResult != DialogResult.Yes && dialogResult != DialogResult.OK)
+                return;
+            
+            File.WriteAllLines(saveFileDialog.FileName,
+                GetReportData(currentDisplayDataGrid), Encoding.GetEncoding(1251));
+
+            MessageBox.Show("Файл успешно сохранен");
+        }
+
+        private string[] GetReportData(DataGridView dataGrid)
+        {
+            var comma = ";";
+            var data = new List<string>();
+            
+            data.Add(string.Join(comma, dataGrid.Columns.AsEnumerable().Select(c => c.HeaderText)));
+            
+            foreach (DataGridViewRow row in dataGrid.Rows)
+            {
+                data.Add(string.Join(comma, row.Cells.Cast<DataGridViewCell>().Select(c => c.Value?.ToString() ?? "")));
+            }
+
+            return data.ToArray();
         }
     }
 }
