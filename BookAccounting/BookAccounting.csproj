@@ -209,7 +209,6 @@
     <Compile Include="Data\Repositories\IRepository.cs" />
     <Compile Include="Data\Repositories\IssuedBooksRepository.cs" />
     <Compile Include="Data\Repositories\ReadersRepository.cs" />
-    <Compile Include="Extensions\DataGridViewColumnCollectionExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="FilterBuilder\FilterStatement.cs" />
     <Compile Include="FilterBuilder\FilterBuilder.cs" />

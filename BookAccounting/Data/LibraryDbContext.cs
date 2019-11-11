@@ -1,7 +1,6 @@
 using BookAccounting.Data.Models;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookAccounting.Data
 {

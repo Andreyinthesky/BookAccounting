@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using BookAccounting.CustomControls;
 using BookAccounting.Data.Models;
 using BookAccounting.Data.Repositories;
-using BookAccounting.Extensions;
 using BookAccounting.FilterBuilder;
-using BookAccounting.FilterBuilder.FilterParameters;
 
 namespace BookAccounting.Forms
 {
@@ -41,17 +37,14 @@ namespace BookAccounting.Forms
             issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
 
             currentDisplayDataGrid = dataGridViewBooks;
-            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
-            
-            fieldFilterTableColumn.DataSource = 
-                currentDisplayDataGrid.Columns.AsEnumerable().Select(c => new {c.HeaderText, c.DataPropertyName}).ToArray();
+            var fieldFilterTableColumn =
+                ((DataGridViewComboBoxColumn) dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+
+            fieldFilterTableColumn.DataSource =
+                currentDisplayDataGrid.Columns.Cast<DataGridViewColumn>()
+                    .Select(c => new {c.HeaderText, c.DataPropertyName}).ToArray();
             fieldFilterTableColumn.DisplayMember = "HeaderText";
             fieldFilterTableColumn.ValueMember = "DataPropertyName";
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-//            db.Dispose();
         }
 
         private void BtnAddBook_Click(object sender, EventArgs e)
@@ -282,10 +275,10 @@ namespace BookAccounting.Forms
             {
                 var builder = new FilterBuilder<Book>(filterStatements);
                 currentBindingSource.DataSource = booksRepository.GetAll().Where(builder).ToList();
-            } 
+            }
             else if (entityType == typeof(Reader))
             {
-                var builder = new FilterBuilder<Reader>(filterStatements);                
+                var builder = new FilterBuilder<Reader>(filterStatements);
                 currentBindingSource.DataSource = readersRepository.GetAll().Where(builder).ToList();
             }
             else if (entityType == typeof(IssuedBook))
@@ -311,8 +304,9 @@ namespace BookAccounting.Forms
         private void TabControlTables_Selecting(object sender, TabControlCancelEventArgs e)
         {
             dataGridViewFilters.Rows.Clear();
-            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
-            
+            var fieldFilterTableColumn =
+                ((DataGridViewComboBoxColumn) dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+
             filtersFromBufferAreLoading = true;
 
             if (e.TabPage == tabPageBooks)
@@ -331,8 +325,9 @@ namespace BookAccounting.Forms
                 dataGridViewFilters.Rows.AddRange(issuedBooksFiltersBuffer.ToArray());
             }
 
-            fieldFilterTableColumn.DataSource = 
-                currentDisplayDataGrid.Columns.AsEnumerable().Select(c => new{c.HeaderText, c.DataPropertyName}).ToArray();
+            fieldFilterTableColumn.DataSource =
+                currentDisplayDataGrid.Columns.Cast<DataGridViewColumn>()
+                    .Select(c => new {c.HeaderText, c.DataPropertyName}).ToArray();
             fieldFilterTableColumn.DisplayMember = "HeaderText";
             fieldFilterTableColumn.ValueMember = "DataPropertyName";
 
@@ -342,15 +337,17 @@ namespace BookAccounting.Forms
         private void DataGridViewFilters_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             if (e.RowCount <= 0 || filtersFromBufferAreLoading) return;
-            
-            var operatorFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["OperatorFilterTableColumn"]);
-            var fieldFilterTableColumn = ((DataGridViewComboBoxColumn)dataGridViewFilters.Columns["FieldFilterTableColumn"]);
-            
+
+            var operatorFilterTableColumn =
+                ((DataGridViewComboBoxColumn) dataGridViewFilters.Columns["OperatorFilterTableColumn"]);
+            var fieldFilterTableColumn =
+                ((DataGridViewComboBoxColumn) dataGridViewFilters.Columns["FieldFilterTableColumn"]);
+
             ((DataGridView) sender).Rows[e.RowIndex].Cells["UsedFilterTableColumn"].Value = true;
             ((DataGridView) sender).Rows[e.RowIndex].Cells["OperatorFilterTableColumn"].Value =
                 operatorFilterTableColumn.Items[0];
             ((DataGridView) sender).Rows[e.RowIndex].Cells["FieldFilterTableColumn"].Value =
-                ((dynamic)fieldFilterTableColumn.Items[0]).DataPropertyName;
+                ((dynamic) fieldFilterTableColumn.Items[0]).DataPropertyName;
             ((DataGridView) sender).Rows[e.RowIndex].Cells["ConditionFilterTableColumn"].Value = "=";
             ((DataGridView) sender).Rows[e.RowIndex].Cells["ValueFilterTableColumn"].Value = "1";
         }
@@ -416,7 +413,7 @@ namespace BookAccounting.Forms
 
             if (dialogResult != DialogResult.Yes && dialogResult != DialogResult.OK)
                 return;
-            
+
             File.WriteAllLines(saveFileDialog.FileName,
                 GetReportData(currentDisplayDataGrid), Encoding.GetEncoding(1251));
 
@@ -427,9 +424,9 @@ namespace BookAccounting.Forms
         {
             var comma = ";";
             var data = new List<string>();
-            
-            data.Add(string.Join(comma, dataGrid.Columns.AsEnumerable().Select(c => c.HeaderText)));
-            
+
+            data.Add(string.Join(comma, dataGrid.Columns.Cast<DataGridViewColumn>().Select(c => c.HeaderText)));
+
             foreach (DataGridViewRow row in dataGrid.Rows)
             {
                 data.Add(string.Join(comma, row.Cells.Cast<DataGridViewCell>().Select(c => c.Value?.ToString() ?? "")));
