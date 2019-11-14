@@ -204,8 +204,10 @@
     <Compile Include="Data\LibraryDbContext.cs" />
     <Compile Include="Data\Models\Book.cs" />
     <Compile Include="Data\Models\IssuedBook.cs" />
+    <Compile Include="Data\Models\IssuedBookView.cs" />
     <Compile Include="Data\Models\Reader.cs" />
     <Compile Include="Data\Repositories\BooksRepository.cs" />
+    <Compile Include="Data\Repositories\ICanGetAll.cs" />
     <Compile Include="Data\Repositories\IRepository.cs" />
     <Compile Include="Data\Repositories\IssuedBooksRepository.cs" />
     <Compile Include="Data\Repositories\ReadersRepository.cs" />

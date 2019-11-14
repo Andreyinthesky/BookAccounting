@@ -10,7 +10,7 @@ namespace BookAccounting.Data.Repositories
         {
         }
 
-        public List<Reader> GetAll()
+        public IEnumerable<Reader> GetAll()
         {
             using (var db = new LibraryDbContext())
             {

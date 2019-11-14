@@ -84,7 +84,12 @@
             this.dateIssueIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateReturnIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.idBookIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bookNameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bookAuthorNameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.idReaderIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.readerNameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.readerSurnameIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.readerPatronymicIssuedBookTableColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.issuedBooksBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControlTables.SuspendLayout();
             this.tabPageBooks.SuspendLayout();
@@ -411,7 +416,13 @@
             this.dateIssueIssuedBookTableColumn,
             this.dateReturnIssuedBookTableColumn,
             this.idBookIssuedBookTableColumn,
-            this.idReaderIssuedBookTableColumn,});
+            this.bookNameIssuedBookTableColumn,
+            this.bookAuthorNameIssuedBookTableColumn,
+            this.idReaderIssuedBookTableColumn,
+            this.readerNameIssuedBookTableColumn,
+            this.readerSurnameIssuedBookTableColumn,
+            this.readerPatronymicIssuedBookTableColumn,
+            });
             this.dataGridViewIssuedBooks.DataSource = this.issuedBooksBindingSource;
             this.dataGridViewIssuedBooks.Location = new System.Drawing.Point(3, 3);
             this.dataGridViewIssuedBooks.Name = "dataGridViewIssuedBooks";
@@ -705,6 +716,22 @@
             this.idBookIssuedBookTableColumn.ReadOnly = true;
             this.idBookIssuedBookTableColumn.Width = 100;
             // 
+            // bookNameIssuedBookTableColumn
+            // 
+            this.bookNameIssuedBookTableColumn.DataPropertyName = "BookName";
+            this.bookNameIssuedBookTableColumn.HeaderText = "Название книги";
+            this.bookNameIssuedBookTableColumn.Name = "bookNameIssuedBookTableColumn";
+            this.bookNameIssuedBookTableColumn.ReadOnly = true;
+            this.bookNameIssuedBookTableColumn.Width = 100;
+            // 
+            // bookAuthorNameIssuedBookTableColumn
+            // 
+            this.bookAuthorNameIssuedBookTableColumn.DataPropertyName = "BookAuthorName";
+            this.bookAuthorNameIssuedBookTableColumn.HeaderText = "Автор книги";
+            this.bookAuthorNameIssuedBookTableColumn.Name = "bookAuthorNameIssuedBookTableColumn";
+            this.bookAuthorNameIssuedBookTableColumn.ReadOnly = true;
+            this.bookAuthorNameIssuedBookTableColumn.Width = 100;
+            // 
             // idReaderIssuedBookTableColumn
             // 
             this.idReaderIssuedBookTableColumn.DataPropertyName = "IdReader";
@@ -712,6 +739,30 @@
             this.idReaderIssuedBookTableColumn.Name = "idReaderIssuedBookTableColumn";
             this.idReaderIssuedBookTableColumn.ReadOnly = true;
             this.idReaderIssuedBookTableColumn.Width = 100;
+            // 
+            // readerNameIssuedBookTableColumn
+            // 
+            this.readerNameIssuedBookTableColumn.DataPropertyName = "ReaderName";
+            this.readerNameIssuedBookTableColumn.HeaderText = "Имя читателя";
+            this.readerNameIssuedBookTableColumn.Name = "readerNameIssuedBookTableColumn";
+            this.readerNameIssuedBookTableColumn.ReadOnly = true;
+            this.readerNameIssuedBookTableColumn.Width = 100;
+            // 
+            // idReaderIssuedBookTableColumn
+            // 
+            this.readerSurnameIssuedBookTableColumn.DataPropertyName = "ReaderSurname";
+            this.readerSurnameIssuedBookTableColumn.HeaderText = "Фамилия читателя";
+            this.readerSurnameIssuedBookTableColumn.Name = "readerSurnameIssuedBookTableColumn";
+            this.readerSurnameIssuedBookTableColumn.ReadOnly = true;
+            this.readerSurnameIssuedBookTableColumn.Width = 100;
+            // 
+            // readerPatronymicIssuedBookTableColumn
+            // 
+            this.readerPatronymicIssuedBookTableColumn.DataPropertyName = "ReaderPatronymic";
+            this.readerPatronymicIssuedBookTableColumn.HeaderText = "Отчество читателя";
+            this.readerPatronymicIssuedBookTableColumn.Name = "readerPatronymicIssuedBookTableColumn";
+            this.readerPatronymicIssuedBookTableColumn.ReadOnly = true;
+            this.readerPatronymicIssuedBookTableColumn.Width = 100;       
             // 
             // issuedBooksBindingSource
             // 
@@ -809,7 +860,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dateIssueIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateReturnIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn idBookIssuedBookTableColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn bookAuthorNameIssuedBookTableColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn bookNameIssuedBookTableColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn idReaderIssuedBookTableColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn readerSurnameIssuedBookTableColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn readerNameIssuedBookTableColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn readerPatronymicIssuedBookTableColumn;
+        
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelBtnBook;
         private System.Windows.Forms.Button btnCreateReport;
     }

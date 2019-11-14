@@ -6,17 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookAccounting.Data.Repositories
 {
-    public class IssuedBooksRepository : IRepository<IssuedBook>
+    public class IssuedBooksRepository : IRepository<IssuedBook>, ICanGetAll<IssuedBookView>
     {
         public IssuedBooksRepository()
         {
         }
 
-        public List<IssuedBook> GetAll()
+        public IEnumerable<IssuedBook> GetAll()
         {
             using (var db = new LibraryDbContext())
             {
-                return db.IssuedBooks.Include(ib => ib.Book).Include(ib => ib.Reader).ToList();
+                return db.IssuedBooks.ToList();
+            }
+        }
+
+        IEnumerable<IssuedBookView> ICanGetAll<IssuedBookView>.GetAll()
+        {
+            using (var db = new LibraryDbContext())
+            {
+                return db.Query<IssuedBookView>().ToList();
             }
         }
 

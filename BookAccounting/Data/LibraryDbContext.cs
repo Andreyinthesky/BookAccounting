@@ -1,5 +1,6 @@
 using BookAccounting.Data.Models;
 using System.Configuration;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAccounting.Data
@@ -28,6 +29,23 @@ namespace BookAccounting.Data
             modelBuilder.Entity<Book>().HasMany((b) => b.IssuedBooks).WithOne(ib => ib.Book)
                 .HasForeignKey(ib => ib.IdBook)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Query<IssuedBookView>().ToQuery(() =>
+                IssuedBooks.Include(ib => ib.Reader).Include(ib => ib.Book)
+                    .Select(book => new IssuedBookView
+                    {
+                        Id = book.Id,
+                        IdReader = book.IdReader,
+                        IdBook = book.IdBook,
+                        ReaderName = book.Reader.Name,
+                        ReaderSurname = book.Reader.Surname,
+                        ReaderPatronymic = book.Reader.Patronymic,
+                        BookName = book.Book.BookName,
+                        BookAuthorName = book.Book.AuthorName,
+                        DateIssue = book.DateIssue,
+                        DateReturn = book.DateReturn,
+                    })
+            );
         }
 
         public DbSet<Book> Books { get; set; }

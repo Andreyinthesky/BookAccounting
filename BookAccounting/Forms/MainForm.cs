@@ -34,7 +34,7 @@ namespace BookAccounting.Forms
         {
             bookBindingSource.DataSource = booksRepository.GetAll();
             readerBindingSource.DataSource = readersRepository.GetAll();
-            issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
+            issuedBooksBindingSource.DataSource = ((ICanGetAll<IssuedBookView>)issuedBooksRepository).GetAll();
 
             currentDisplayDataGrid = dataGridViewBooks;
             var fieldFilterTableColumn =
@@ -100,7 +100,7 @@ namespace BookAccounting.Forms
 
                     booksRepository.Delete((Book) bookBindingSource.Current);
                     bookBindingSource.RemoveCurrent();
-                    issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
+                    issuedBooksBindingSource.DataSource = ((ICanGetAll<IssuedBookView>)issuedBooksRepository).GetAll();
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace BookAccounting.Forms
 
                     readersRepository.Delete((Reader) readerBindingSource.Current);
                     readerBindingSource.RemoveCurrent();
-                    issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll();
+                    issuedBooksBindingSource.DataSource = ((ICanGetAll<IssuedBookView>)issuedBooksRepository).GetAll();
                 }
             }
         }
@@ -177,7 +177,7 @@ namespace BookAccounting.Forms
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    issuedBooksBindingSource.DataSource = issuedBooksRepository.GetAll().ToList();
+                    issuedBooksBindingSource.DataSource = ((ICanGetAll<IssuedBookView>)issuedBooksRepository).GetAll();
                     bookBindingSource.DataSource = booksRepository.GetAll();
                 }
             }
@@ -281,10 +281,11 @@ namespace BookAccounting.Forms
                 var builder = new FilterBuilder<Reader>(filterStatements);
                 currentBindingSource.DataSource = readersRepository.GetAll().Where(builder).ToList();
             }
-            else if (entityType == typeof(IssuedBook))
+            else if (entityType == typeof(IssuedBookView))
             {
-                var builder = new FilterBuilder<IssuedBook>(filterStatements);
-                currentBindingSource.DataSource = issuedBooksRepository.GetAll().Where(builder).ToList();
+                var builder = new FilterBuilder<IssuedBookView>(filterStatements);
+                currentBindingSource.DataSource = ((ICanGetAll<IssuedBookView>)issuedBooksRepository)
+                    .GetAll().Where(builder).ToList();
             }
         }
 
